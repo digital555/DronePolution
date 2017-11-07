@@ -10,7 +10,7 @@ public class DroneFlight : MonoBehaviour {
     public GameObject drone;
     Rigidbody m_Rigidbody;
 
-    float x_Ax, y_Ax, fire, x_Start, y_Start, xMin, xMax, zMin, zMax, dX, dZ, previousTime = 0, currIntensity, currTime;
+    float x_Ax, y_Ax, fire, x_Start, y_Start, xMin, xMax, zMin, zMax, dX, dZ, previousTime = 0, currIntensity, currTime, label;
 
     int hits = 0;
     int segX, segZ, lastBoxX, lastBoxZ;
@@ -22,8 +22,8 @@ public class DroneFlight : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-        cubesXZ = new GameObject[1,1];
-  
+        cubesXZ = new GameObject[1000, 1000];
+
 
         xMax = drone.transform.position.x;
         xMin = drone.transform.position.x;
@@ -58,7 +58,7 @@ public class DroneFlight : MonoBehaviour {
 
         //Debug.Log(m_Rigidbody.GetRelativePointVelocity(new Vector3(0,0,0)));
 
-        WidthHeight(drone.transform.position.x, drone.transform.position.z);
+        DyeCubes((int)(drone.transform.position.x) / 10, (int)(drone.transform.position.z) / 10, 0, 0.1f);
 	}
 
 
@@ -70,10 +70,10 @@ public class DroneFlight : MonoBehaviour {
         //SaveToExcel(("" + hits));
         //WriteString();
 
-        if(Time.fixedTime - previousTime > 0.01f)
-            DyeCubes((int)(drone.transform.position.x - xMin)/10, (int)(drone.transform.position.z - zMin)/10, 1, Time.fixedTime - previousTime);
 
-        previousTime = Time.fixedTime;
+        DyeCubes((int)(drone.transform.position.x)/10, (int)(drone.transform.position.z)/10, 1, 0);
+
+
     }
 
     /*void SaveToExcel(string textTo)
@@ -124,54 +124,47 @@ public class DroneFlight : MonoBehaviour {
         dX = xMax - xMin;
         dZ = zMax - zMin;
 
-        segX = (int)(dX / 10) + 1 ;
-        segZ = (int)(dZ / 10) + 1 ;
+        segX = (int)(x / 10) + 1 ;
+        segZ = (int)(z / 10) + 1 ;
 
-        Cubes(segX, segZ);
-    }
-
-    void Cubes(int dimX, int dimZ)
-    {
-        if (cubesXZ.GetLength(0) < dimX || cubesXZ.GetLength(1) < dimZ)
-        {
-            foreach (GameObject gos in cubesXZ)
-            {
-                Destroy(gos);
-            }
-            cubesXZ = new GameObject[dimX, dimZ];
-            for(int i = 0; i < cubesXZ.GetLength(0); i++)
-            {                
-                for(int j = 0; j < cubesXZ.GetLength(1); j++)
-                {
-                    cubesXZ[i, j] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    cubesXZ[i, j].transform.position = new Vector3(i, 0, j);
-                    Debug.Log(i + " ; " + j);
-                    DyeCubes(i, j, 0, 0);
-                }
-            }
-        }
+        DyeCubes(segX, segZ, 0, 0);
     }
 
     void DyeCubes(int x, int z, float intensity, float time)
     {
-        if(!magnitudes.ContainsKey(x + ";" + z))
+        if(cubesXZ[x, z] == null)
         {
-            magnitudes.Add((x + ";" + z), new float[2]);
-            magnitudes[(x + ";" + z)][0] += intensity;
-            magnitudes[(x + ";" + z)][1] += time;
-        } else
-        {
-            magnitudes[(x + ";" + z)][0] += intensity;
-            magnitudes[(x + ";" + z)][1] += time;           
+            //Debug.Log(x + " ; " + z);
+            cubesXZ[x, z] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cubesXZ[x, z].transform.position = new Vector3(x, 0, z);
+            cubesXZ[x, z].GetComponent<Renderer>().material.color = Random.ColorHSV(0f, 0f, 0f, 0f, 0, 0);
         }
+        else {
 
-        currIntensity = magnitudes[(x + ";" + z)][0];
-        currTime = magnitudes[(x + ";" + z)][1];
+            if(!magnitudes.ContainsKey(x + ";" + z))
+            {
+                magnitudes.Add((x + ";" + z), new float[2]);
+                magnitudes[(x + ";" + z)][0] += intensity;
+                magnitudes[(x + ";" + z)][1] += time;
+            } else
+            {
+                magnitudes[(x + ";" + z)][0] += intensity;
+                magnitudes[(x + ";" + z)][1] += time;
+            }
+
+            currIntensity = magnitudes[(x + ";" + z)][0];
+            currTime = magnitudes[(x + ";" + z)][1];
+            label = currIntensity / (currTime);
 
 
-        if(!(currIntensity > 0 || currTime > 0));
-            cubesXZ[x, z].GetComponent<Renderer>().material.color = Random.ColorHSV(0f, 0f, 0f, 0f, (currIntensity / (currTime * 100)), (currIntensity / (currTime * 100)));
 
-        Debug.Log(x + " ; " + z + " " + (currIntensity / (currTime * 100)));
+            if((currIntensity > 0 || currTime > 0))
+            {
+                cubesXZ[x, z].GetComponent<Renderer>().material.color = Random.ColorHSV(0f, 0f, 0f, 0f, label/10, label/10);
+                Debug.Log(x + " ; " + z + " ; " + currIntensity + " ; " + currTime + " ; " + label);
+            }
+
+        }
+        
     }
 }
