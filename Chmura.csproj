@@ -78,10 +78,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\DroneFlight.cs" />
-    <Compile Include="Assets\GraphCreator.cs" />
     <Compile Include="Assets\Models\Destroyed_city_FREE\Standard Assets\Character Controllers\Sources\Scripts\MouseLook.cs" />
     <Compile Include="Assets\Models\Destroyed_city_FREE\Standard Assets\Water (Pro Only)\Sources\Scripts\Water.cs" />
+    <Compile Include="Assets\Scripts\DroneFlight.cs" />
+    <Compile Include="Assets\Scripts\GraphCreator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Models\Destroyed_city_FREE\Destroyed_city_FREE_Info.txt" />

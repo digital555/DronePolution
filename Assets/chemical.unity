@@ -243,7 +243,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 153638092}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c71ca574eb8a668479118f72a7be5a91, type: 3}
+  m_Script: {fileID: 11500000, guid: 242c4c5f6c5335e44a4e811881d2bfcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   drone: {fileID: 153638092}
